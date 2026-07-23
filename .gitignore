@@ -1,0 +1,30 @@
+# --- Secrets & credentials: never commit ---
+.env
+.env.*
+*.pem
+*.key
+kubeconfig
+kubeconfig*
+*.kubeconfig
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+crash.log
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+.idea/
