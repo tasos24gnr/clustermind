@@ -13,7 +13,7 @@ entire premise.
 Constraints at the time of this decision:
 
 - **Budget is €0.** The target host is an Oracle Cloud always-free ARM VM
-  (4 OCPU / 24 GB RAM). Everything must fit there.
+  (2 OCPU / 12 GB RAM). Everything must fit there.
 - **ARM64 architecture.** Not all tooling ships ARM builds; this narrows the field.
 - **Single node.** The free tier provides one machine. There is no second node to fail
   over to.
@@ -64,8 +64,8 @@ offering has a free tier compatible with a €0 budget for continuous operation.
   learning value.
 - Traefik ingress and a local-path storage provisioner ship enabled by default, removing
   two configuration decisions from the critical path.
-- Comfortable headroom on 24 GB for Qdrant, Langfuse, the API service and the
-  deliberately fragile demo application.
+- Headroom on 12 GB for Qdrant, Langfuse, the API service and the
+  deliberately fragile demo application, provided Langfuse runs out of band rather than in cluster.
 
 **Accepted costs and risks:**
 
