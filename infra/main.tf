@@ -78,3 +78,45 @@ resource "oci_core_security_list" "main" {
     }
   }
 }
+
+# Look up the availability domain (which physical zone in the region to use).
+data "oci_identity_availability_domains" "ads" {
+  compartment_id = var.compartment_ocid
+}
+
+# Look up the latest Ubuntu 24.04 ARM image in this region (not hardcoded).
+data "oci_core_images" "ubuntu" {
+  compartment_id           = var.compartment_ocid
+  operating_system         = "Canonical Ubuntu"
+  operating_system_version = "24.04"
+  shape                    = var.instance_shape
+  sort_by                  = "TIMECREATED"
+  sort_order               = "DESC"
+}
+
+# The VM itself.
+resource "oci_core_instance" "main" {
+  compartment_id      = var.compartment_ocid
+  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[var.availability_domain_index].name
+  display_name        = "clustermind-node"
+  shape               = var.instance_shape
+
+  shape_config {
+    ocpus         = var.instance_ocpus
+    memory_in_gbs = var.instance_memory_gb
+  }
+
+  source_details {
+    source_type = "image"
+    source_id   = data.oci_core_images.ubuntu.images[0].id
+  }
+
+  create_vnic_details {
+    subnet_id        = oci_core_subnet.main.id
+    assign_public_ip = true
+  }
+
+  metadata = {
+    ssh_authorized_keys = var.ssh_public_key
+  }
+}

@@ -30,3 +30,9 @@ variable "instance_memory_gb" {
   type        = number
   default     = 12
 }
+
+variable "availability_domain_index" {
+  description = "Which availability domain to use"
+  type = number
+  default = 0  
+}
