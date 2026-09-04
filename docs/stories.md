@@ -11,3 +11,16 @@ Three days into the project my cloud provider cut the Always Free ARM allowance 
 verifying vendor terms before provisioning instead of trusting my own plan document.
 Re-budgeted the cluster (Langfuse moves out-of-band) and corrected the ADR. Lesson:
 free-tier terms are not a contract; verify current reality before building on it.
+
+## Two clouds ran out of ARM capacity (2026-08)
+Designed for a €0 Oracle free-tier ARM VM. Oracle returned "Out of host capacity" across
+every Frankfurt availability domain — through an overnight retry loop and even after a
+PAYG upgrade. Fell back to Hetzner; its ARM shapes were also unavailable across all EU
+locations. Because everything was Terraform, migrating providers and switching ARM->x86
+was a config change, not a rebuild — the network concepts, SSH keys and workflow all
+transferred. Lesson: don't marry an architecture choice that isn't load-bearing, and
+don't defend a €0 constraint past the point where it costs you days. Ended on Hetzner x86.## Kept the Kubernetes API off the public internet (2026-08)
+The cluster firewall only opens 22/80/443 — port 6443 (the K8s API) is closed to the
+world. Instead of opening it, I reach the API from my laptop over an SSH tunnel
+(`ssh -L 6443:localhost:6443`), so the control plane has zero public attack surface.
+Chose the secure pattern over the common "open 6443 to my IP" shortcut.
