@@ -30,3 +30,19 @@ jobs:
           context: ./app
           push: true
           tags: ghcr.io/tasos24gnr/clustermind-api:latest
+
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to cluster over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            kubectl apply -f /root/api.yaml
+            kubectl rollout restart deployment/clustermind-api -n demo
+            kubectl rollout status deployment/clustermind-api -n demo --timeout=90s
