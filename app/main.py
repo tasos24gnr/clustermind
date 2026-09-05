@@ -11,4 +11,4 @@ def healthz():
 
 @app.get("/")
 def root():
-    return {"service": "clustermind", "message": "not much here yet"}
+    return {"service": "clustermind", "message": "deployed automatically via CI-CD"}
