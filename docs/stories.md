@@ -24,3 +24,15 @@ The cluster firewall only opens 22/80/443 — port 6443 (the K8s API) is closed 
 world. Instead of opening it, I reach the API from my laptop over an SSH tunnel
 (`ssh -L 6443:localhost:6443`), so the control plane has zero public attack surface.
 Chose the secure pattern over the common "open 6443 to my IP" shortcut.
+
+## Six-layer debug to get HTTPS working (2026-09)
+Getting a TLS cert on single-node k3s took debugging six distinct failures, each
+revealed only after fixing the last, all read from `kubectl logs`/`describe`:
+(1) Helm chart schema rejected the redirect config; (2) k3s's built-in servicelb
+grabbed ports 80/443 before Traefik — disabled it; (3) non-root Traefik couldn't bind
+privileged ports — ran as root (acceptable for a single-node edge proxy);
+(4) HTTP-01 challenge conflicted with the HTTP->HTTPS redirect — switched to TLS-ALPN;
+(5) readOnlyRootFilesystem blocked writing the ACME store — removed it;
+(6) tlsChallenge:{} didn't register via Helm — forced it with an explicit CLI flag.
+Lesson: read the ONE fatal error line past the warnings, fix, repeat. Each layer was
+a clean diagnosis, not a guess.
