@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: clustermind-api
+  namespace: demo
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`clustermind-tasos.duckdns.org`)
+      kind: Rule
+      services:
+        - name: clustermind-api
+          port: 80
+  tls:
+    certResolver: letsencrypt
